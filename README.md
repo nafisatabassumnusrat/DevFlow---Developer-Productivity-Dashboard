@@ -6,10 +6,9 @@
 ---
 
 ## 🌐 Live Demo  
+👉 https://nafisatabassumnusrat.github.io/DevFlow---Developer-Productivity-Dashboard/
 
-[![Vercel](https://vercelbadge.vercel.app/api/your-username/devflow)](https://your-vercel-link.vercel.app)
 
-👉 https://your-vercel-link.vercel.app  
 
 ---
 
