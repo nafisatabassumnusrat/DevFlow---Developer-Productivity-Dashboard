@@ -1,5 +1,4 @@
-# DevFlow---Developer-Productivity-Dashboard
-# 🚀 DevFlow – Developer Productivity Dashboard  
+
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&text=%20DevFlow%20–%20Developer%20Productivity%20Dashboard&fontSize=30&animation=fadeIn"/>
