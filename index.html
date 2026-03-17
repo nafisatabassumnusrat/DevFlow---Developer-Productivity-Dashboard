@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>DevFlow — Developer Productivity Dashboard</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23b04cff'/%3E%3Cstop offset='100%25' stop-color='%23ff4cb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia%2C serif' font-size='28' font-weight='bold' fill='white'%3EDF%3C/text%3E%3C/svg%3E"/>
+
+  <link rel="stylesheet" href="style.css" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LOADING SCREEN
+═══════════════════════════════════════════ -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="loader-box">
+    <div class="loader-favicon">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" class="loader-favicon-svg">
+        <defs>
+          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#b04cff"/>
+            <stop offset="100%" stop-color="#ff4cb0"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="14" fill="url(#lg1)"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Georgia, serif" font-size="28" font-weight="bold" fill="white">DF</text>
+      </svg>
+      <div class="loader-favicon-ring"></div>
+    </div>
+    <div class="loader-name">
+      <span class="ln" style="--i:0">D</span><span class="ln" style="--i:1">e</span><span class="ln" style="--i:2">v</span><span class="ln" style="--i:3">F</span><span class="ln" style="--i:4">l</span><span class="ln" style="--i:5">o</span><span class="ln" style="--i:6">w</span>
+    </div>
+    <p class="loader-sub">Developer Productivity Dashboard</p>
+    <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
+    <div class="loader-dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="fa-solid fa-code"></i></div>
+    <span class="logo-text">DevFlow</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#dashboard" class="nav-item active" data-section="dashboard">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span>Dashboard</span>
+      <div class="nav-indicator"></div>
+    </a>
+    <a href="#coding" class="nav-item" data-section="coding">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Coding Tracker</span>
+    </a>
+    <a href="#tasks" class="nav-item" data-section="tasks">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Task Manager</span>
+    </a>
+    <a href="#analytics" class="nav-item" data-section="analytics">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Analytics</span>
+    </a>
+    <a href="#github" class="nav-item" data-section="github">
+      <i class="fa-brands fa-github"></i>
+      <span>GitHub</span>
+    </a>
+    <a href="#settings" class="nav-item" data-section="settings">
+      <i class="fa-solid fa-sliders"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-avatar">
+      <div class="avatar-ring">
+        <img src="Nafisa_Tabassum_Nusrat.jpg" alt="Nafisa Tabassum Nusrat" class="avatar-photo"/>
+      </div>
+      <div class="avatar-info">
+        <span class="avatar-name">Nafisa T. Nusrat</span>
+        <span class="avatar-role">Front-End Dev</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Sidebar Toggle (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+
+<!-- ═══════════════════════════════════════════
+     MAIN WRAPPER
+═══════════════════════════════════════════ -->
+<main class="main-wrapper">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search anything…" class="search-input"/>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+      </button>
+      <button class="topbar-btn notif-btn">
+        <i class="fa-solid fa-bell"></i>
+        <span class="badge">3</span>
+      </button>
+      <div class="topbar-profile">
+        <img src="Nafisa_Tabassum_Nusrat.jpg" alt="Nafisa Tabassum Nusrat" class="profile-avatar-img"/>
+        <div class="profile-info">
+          <span class="profile-name">Nafisa Tabassum Nusrat</span>
+          <span class="profile-role">Front-End Web Developer</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── DASHBOARD CONTENT ─── -->
+  <div class="content-area">
+
+    <!-- ── HERO SECTION ── -->
+    <section class="hero-section" id="dashboard">
+      <div class="hero-left">
+        <div class="hero-badge"><i class="fa-solid fa-bolt"></i> Live Dashboard</div>
+        <h1 class="hero-title">Developer<br/><span class="gradient-text">Productivity</span><br/>Dashboard</h1>
+        <p class="hero-sub">Track your coding progress, tasks and productivity — all in one powerful hub.</p>
+        <div class="hero-stats-row">
+          <div class="hero-mini-stat"><span id="heroStreak">0</span><small>Day Streak</small></div>
+          <div class="hero-mini-stat"><span id="heroTasks">0</span><small>Tasks Done</small></div>
+          <div class="hero-mini-stat"><span id="heroScore">0%</span><small>Productivity</small></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-illustration">
+          <div class="ill-screen">
+            <div class="ill-topbar"><span></span><span></span><span></span></div>
+            <div class="ill-code">
+              <div class="code-line cl1"><span class="kw">const</span> <span class="fn">devflow</span> = () =&gt; {</div>
+              <div class="code-line cl2">  <span class="kw">return</span> <span class="str">"productivity++"</span>;</div>
+              <div class="code-line cl3">};</div>
+              <div class="code-line cl4"><span class="cm">// 🚀 Let's ship it</span></div>
+            </div>
+            <div class="ill-chart-mini">
+              <svg viewBox="0 0 120 40" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#b04cff"/>
+                    <stop offset="100%" style="stop-color:#ff4cb0"/>
+                  </linearGradient>
+                </defs>
+                <polyline points="0,35 20,28 40,20 60,25 80,10 100,15 120,5"
+                  fill="none" stroke="url(#chartGrad)" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="ill-float-card f1"><i class="fa-solid fa-fire"></i> <span>12h coded</span></div>
+          <div class="ill-float-card f2"><i class="fa-solid fa-check-circle"></i> <span>8 tasks</span></div>
+          <div class="orb orb1"></div>
+          <div class="orb orb2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SUMMARY CARDS ── -->
+    <section class="summary-cards" id="summary">
+      <div class="card summary-card" id="card-coding-time">
+        <div class="card-icon-wrap" style="--c1:#b04cff;--c2:#7b2fff">
+          <i class="fa-solid fa-stopwatch"></i>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Today's Coding Time</span>
+          <span class="card-value" id="summaryTime">00:00:00</span>
+          <span class="card-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12% vs yesterday</span>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+      <div class="card summary-card" id="card-completed">
+        <div class="card-icon-wrap" style="--c1:#00e5b0;--c2:#00a87a">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Total Tasks Completed</span>
+          <span class="card-value" id="summaryCompleted">0</span>
+          <span class="card-trend up"><i class="fa-solid fa-arrow-trend-up"></i> Great progress!</span>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+      <div class="card summary-card" id="card-active">
+        <div class="card-icon-wrap" style="--c1:#ff9e3d;--c2:#ff6b00">
+          <i class="fa-solid fa-list-ul"></i>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Active Tasks</span>
+          <span class="card-value" id="summaryActive">0</span>
+          <span class="card-trend neutral"><i class="fa-solid fa-minus"></i> In progress</span>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+      <div class="card summary-card" id="card-score">
+        <div class="card-icon-wrap" style="--c1:#ff4cb0;--c2:#c4006a">
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Weekly Productivity Score</span>
+          <span class="card-value" id="summaryScore">0%</span>
+          <span class="card-trend up"><i class="fa-solid fa-arrow-trend-up"></i> Keep it up!</span>
+        </div>
+        <div class="card-glow"></div>
+      </div>
+    </section>
+
+    <!-- ── TWO COLUMN: TIMER + PRODUCTIVITY CIRCLE ── -->
+    <section class="two-col-section" id="coding">
+      <!-- Coding Timer -->
+      <div class="card timer-card">
+        <div class="card-header">
+          <h2><i class="fa-solid fa-clock"></i> Coding Time Tracker</h2>
+          <span class="session-badge">Session Active</span>
+        </div>
+        <div class="timer-display">
+          <div class="timer-ring">
+            <svg viewBox="0 0 200 200" class="ring-svg">
+              <circle cx="100" cy="100" r="88" class="ring-bg"/>
+              <circle cx="100" cy="100" r="88" class="ring-progress" id="timerRing"/>
+            </svg>
+            <div class="timer-inner">
+              <span class="timer-time" id="timerDisplay">00:00:00</span>
+              <span class="timer-label">Session Time</span>
+            </div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn btn-start" id="btnStart"><i class="fa-solid fa-play"></i> Start</button>
+          <button class="btn btn-pause" id="btnPause" disabled><i class="fa-solid fa-pause"></i> Pause</button>
+          <button class="btn btn-reset" id="btnReset"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+        </div>
+        <div class="timer-total">
+          <i class="fa-solid fa-sun"></i>
+          Today's total: <strong id="timerTotal">00:00:00</strong>
+        </div>
+      </div>
+
+      <!-- Productivity Circle -->
+      <div class="card productivity-card">
+        <div class="card-header">
+          <h2><i class="fa-solid fa-chart-pie"></i> Productivity Score</h2>
+        </div>
+        <div class="productivity-chart-wrap">
+          <canvas id="productivityChart" width="260" height="260"></canvas>
+          <div class="prod-center-label">
+            <span id="prodPercent">0%</span>
+            <small>This Week</small>
+          </div>
+        </div>
+        <div class="prod-legend">
+          <div class="legend-item"><span class="dot" style="background:linear-gradient(135deg,#b04cff,#ff4cb0)"></span>Coding</div>
+          <div class="legend-item"><span class="dot" style="background:linear-gradient(135deg,#00e5b0,#00a87a)"></span>Tasks</div>
+          <div class="legend-item"><span class="dot" style="background:linear-gradient(135deg,#ff9e3d,#ff6b00)"></span>Reviews</div>
+        </div>
+        <div class="prod-stats-row">
+          <div class="prod-stat"><span id="psCode">0h</span><small>Coding</small></div>
+          <div class="prod-stat"><span id="psTasks">0</span><small>Tasks</small></div>
+          <div class="prod-stat"><span id="psReviews">0</span><small>Reviews</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TASK MANAGER ── -->
+    <section class="card task-section" id="tasks">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-list-check"></i> Task Manager</h2>
+        <button class="btn btn-add" id="btnAddTask"><i class="fa-solid fa-plus"></i> Add Task</button>
+      </div>
+
+      <!-- Add task form -->
+      <div class="task-form" id="taskForm" style="display:none">
+        <input type="text" id="taskInput" placeholder="Task title…" class="task-input"/>
+        <select id="taskPriority" class="task-select">
+          <option value="low">🟢 Low</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="high">🔴 High</option>
+        </select>
+        <div class="task-form-actions">
+          <button class="btn btn-save" id="btnSaveTask">Save Task</button>
+          <button class="btn btn-cancel" id="btnCancelTask">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Task Filter Tabs -->
+      <div class="task-tabs">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="active">Active</button>
+        <button class="tab-btn" data-filter="completed">Completed</button>
+        <button class="tab-btn" data-filter="high">High Priority</button>
+      </div>
+
+      <!-- Task List -->
+      <div class="task-grid" id="taskGrid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ── ANALYTICS CHART ── -->
+    <section class="card analytics-section" id="analytics">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-chart-line"></i> Weekly Analytics</h2>
+        <div class="chart-legend">
+          <span class="cl-item"><span class="cl-dot" style="background:#b04cff"></span>Coding Hours</span>
+          <span class="cl-item"><span class="cl-dot" style="background:#00e5b0"></span>Tasks Done</span>
+          <span class="cl-item"><span class="cl-dot" style="background:#ff9e3d"></span>In Progress</span>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="analyticsChart"></canvas>
+      </div>
+    </section>
+
+    <!-- ── GITHUB ACTIVITY ── -->
+    <section class="card github-section" id="github">
+      <div class="card-header">
+        <h2><i class="fa-brands fa-github"></i> GitHub Activity Viewer</h2>
+      </div>
+      <div class="github-search">
+        <div class="gh-input-wrap">
+          <i class="fa-brands fa-github"></i>
+          <input type="text" id="githubInput" placeholder="Enter username or https://github.com/username" class="gh-input"/>
+        </div>
+        <button class="btn btn-fetch" id="btnFetchGH"><i class="fa-solid fa-arrow-right"></i> Fetch</button>
+      </div>
+      <div class="github-result" id="githubResult" style="display:none">
+        <div class="gh-profile">
+          <img id="ghAvatar" src="" alt="avatar" class="gh-avatar"/>
+          <div class="gh-info">
+            <h3 id="ghName"></h3>
+            <p id="ghBio"></p>
+            <div class="gh-meta">
+              <span id="ghLocation"><i class="fa-solid fa-location-dot"></i> </span>
+              <span id="ghBlog"><i class="fa-solid fa-link"></i> </span>
+            </div>
+          </div>
+        </div>
+        <div class="gh-stats-grid">
+          <div class="gh-stat-card">
+            <i class="fa-solid fa-book-open"></i>
+            <span id="ghRepos">0</span>
+            <small>Repositories</small>
+          </div>
+          <div class="gh-stat-card">
+            <i class="fa-solid fa-users"></i>
+            <span id="ghFollowers">0</span>
+            <small>Followers</small>
+          </div>
+          <div class="gh-stat-card">
+            <i class="fa-solid fa-user-plus"></i>
+            <span id="ghFollowing">0</span>
+            <small>Following</small>
+          </div>
+          <div class="gh-stat-card">
+            <i class="fa-solid fa-star"></i>
+            <span id="ghGists">0</span>
+            <small>Gists</small>
+          </div>
+        </div>
+        <div class="gh-repos-section">
+          <h4>Recent Public Repositories</h4>
+          <div class="gh-repos-list" id="ghReposList"></div>
+        </div>
+      </div>
+      <div class="github-error" id="githubError" style="display:none">
+        <i class="fa-solid fa-circle-exclamation"></i> <span id="ghErrorMsg">User not found.</span>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ── -->
+    <section class="card settings-section" id="settings">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-sliders"></i> Settings & Preferences</h2>
+      </div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <div class="setting-label">
+            <i class="fa-solid fa-palette"></i>
+            <div>
+              <strong>Theme</strong>
+              <small>Toggle between dark and light mode</small>
+            </div>
+          </div>
+          <button class="btn btn-setting" id="settingThemeBtn">Toggle Theme</button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <i class="fa-solid fa-trash"></i>
+            <div>
+              <strong>Clear All Tasks</strong>
+              <small>Remove all tasks from storage</small>
+            </div>
+          </div>
+          <button class="btn btn-danger" id="btnClearTasks">Clear Tasks</button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div>
+              <strong>Reset Timer Data</strong>
+              <small>Reset today's coding time log</small>
+            </div>
+          </div>
+          <button class="btn btn-danger" id="btnResetTimer">Reset Timer</button>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <i class="fa-solid fa-info-circle"></i>
+            <div>
+              <strong>App Version</strong>
+              <small>DevFlow v1.0.0</small>
+            </div>
+          </div>
+          <span class="version-badge">v1.0.0</span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content-area -->
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER / CREATOR CREDIT
+  ═══════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo"><i class="fa-solid fa-code"></i> DevFlow</div>
+        <p class="footer-tagline">Your all-in-one developer productivity hub.</p>
+      </div>
+      <div class="footer-creator">
+        <div class="creator-card">
+          <img src="Nafisa_Tabassum_Nusrat.jpg" alt="Nafisa Tabassum Nusrat" class="creator-avatar-img"/>
+          <div class="creator-info">
+            <strong>Nafisa Tabassum Nusrat</strong>
+            <span>Front-End Web Developer</span>
+          </div>
+        </div>
+        <p class="creator-msg">Designed and Developed by <em>Nafisa Tabassum Nusrat</em>.</p>
+        <div class="creator-links">
+          <a href="https://github.com/nafisatabassumnusrat" target="_blank" class="creator-link github-link">
+            <i class="fa-brands fa-github"></i> GitHub
+          </a>
+          <a href="https://www.linkedin.com/in/nafisa-tabassum-nusrat-57134721a/" target="_blank" class="creator-link linkedin-link">
+            <i class="fa-brands fa-linkedin"></i> LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Nafisa Tabassum Nusrat — All Rights Reserved</span>
+    </div>
+  </footer>
+
+</main>
+
+<!-- Edit Task Modal -->
+<div class="modal-overlay" id="editModal" style="display:none">
+  <div class="modal-card">
+    <h3><i class="fa-solid fa-pen"></i> Edit Task</h3>
+    <input type="text" id="editTaskInput" class="task-input" placeholder="Task title…"/>
+    <select id="editTaskPriority" class="task-select">
+      <option value="low">🟢 Low</option>
+      <option value="medium">🟡 Medium</option>
+      <option value="high">🔴 High</option>
+    </select>
+    <div class="task-form-actions">
+      <button class="btn btn-save" id="btnUpdateTask">Update</button>
+      <button class="btn btn-cancel" id="btnCloseModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
